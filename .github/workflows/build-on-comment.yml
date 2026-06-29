@@ -1,4 +1,4 @@
-name: Henry on Comment
+name: Build on Comment
 
 on:
   issue_comment:
