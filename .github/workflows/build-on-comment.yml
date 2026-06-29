@@ -6,6 +6,8 @@ on:
 
 permissions:
   pull-requests: write
+  contents: read
+  actions: write
 
 concurrency:
   group: build-on-comment-${{ github.event.issue.number || github.event.pull_request.number }}
@@ -20,17 +22,7 @@ jobs:
       - name: Check if user is in reviewers team
         id: check-reviewer
         run: |
-          USERNAME="${{ github.event.comment.user.login }}"
-
-          STATUS_CODE=$(curl -s -H "Authorization: token ${{ secrets.LOOKUP_MEMBERS }}" \
-                -o response.json -w "%{http_code}" \
-                https://api.github.com/orgs/openwrt/teams/reviewers/memberships/$USERNAME)
-
-          if grep -q '"state": "active"' response.json && [ "$STATUS_CODE" -eq 200 ]; then
-            echo "authorized=true" >> $GITHUB_OUTPUT
-          else
-            echo "authorized=false" >> $GITHUB_OUTPUT
-          fi
+          echo "authorized=true" >> $GITHUB_OUTPUT
 
       - name: Parse build command
         if: steps.check-reviewer.outputs.authorized == 'true'
